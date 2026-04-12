@@ -187,7 +187,7 @@ function PanelConductor({ perfil, usuario }) {
         .from('furgon')
         .select('*')
         .eq('id_conductor', usuario.id)
-        .single()
+        .maybeSingle()
 
       if (furgonError && furgonError.code !== 'PGRST116') throw furgonError
 

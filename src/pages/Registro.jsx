@@ -110,13 +110,16 @@ export default function Registro() {
 
     // Insertar en la tabla perfil si el usuario fue creado correctamente
     if (data?.user) {
-      const { error: perfilError } = await supabase.from('perfil').insert({
-        id: data.user.id,
-        nombre: nombre.trim(),
-        tipo_usuario: tipoUsuario,
-        rut: '',
-        telefono: '',
-      })
+      const { error: perfilError } = await supabase.from('perfil').upsert(
+        {
+          id: data.user.id,
+          nombre: nombre.trim(),
+          tipo_usuario: tipoUsuario,
+          rut: '',
+          telefono: '',
+        },
+        { onConflict: 'id' }
+    )
 
       if (perfilError) {
         setCargando(false)
