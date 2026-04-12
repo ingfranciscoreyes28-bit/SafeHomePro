@@ -1,0 +1,415 @@
+/* ============================================================
+   SafeHome — Global Design System
+   Modo oscuro primario, acento dorado
+   ============================================================ */
+
+:root {
+  /* Colores base */
+  --color-bg: #0D0D0D;
+  --color-surface: #1A1A1A;
+  --color-surface-2: #242424;
+  --color-surface-3: #2E2E2E;
+
+  /* Primario dorado */
+  --color-primary: #F5C518;
+  --color-primary-hover: #D4A017;
+  --color-primary-dark: #B8860B;
+  --color-primary-faint: rgba(245, 197, 24, 0.08);
+  --color-primary-glow: rgba(245, 197, 24, 0.25);
+
+  /* Texto */
+  --color-text: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+  --color-text-muted: #666666;
+  --color-text-on-primary: #0D0D0D;
+
+  /* Bordes */
+  --color-border: #2A2A2A;
+  --color-border-hover: #3A3A3A;
+  --color-border-focus: #F5C518;
+
+  /* Estados */
+  --color-error: #FF4444;
+  --color-error-bg: rgba(255, 68, 68, 0.08);
+  --color-success: #44BB44;
+  --color-success-bg: rgba(68, 187, 68, 0.08);
+  --color-warning: #F5C518;
+  --color-info: #4A9EFF;
+
+  /* Roles — badges */
+  --color-role-admin: #A855F7;
+  --color-role-admin-bg: rgba(168, 85, 247, 0.15);
+  --color-role-conductor: #F5C518;
+  --color-role-conductor-bg: rgba(245, 197, 24, 0.15);
+  --color-role-apoderado: #4A9EFF;
+  --color-role-apoderado-bg: rgba(74, 158, 255, 0.15);
+
+  /* Radios */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-golden: 0 0 12px rgba(245, 197, 24, 0.3);
+  --shadow-golden-lg: 0 0 24px rgba(245, 197, 24, 0.4);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Tipografía */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* Espaciados base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+/* ============================================================
+   Reset y base global
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100svh;
+}
+
+/* Neutralizar el #root del index.css de Vite */
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  text-align: left !important;
+  border-inline: none !important;
+  min-height: 100svh;
+  display: block !important;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Componentes compartidos reutilizables
+   ============================================================ */
+
+/* Input base */
+.sh-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-surface-2);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+  appearance: none;
+}
+
+.sh-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.sh-input:hover {
+  border-color: var(--color-border-hover);
+}
+
+.sh-input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.sh-input--error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.15);
+}
+
+/* Select base */
+.sh-select {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  background: var(--color-surface-2);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A0A0A0' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.sh-select:hover {
+  border-color: var(--color-border-hover);
+}
+
+.sh-select:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.sh-select option {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+/* Botón primario */
+.sh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 13px 24px;
+  background: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  letter-spacing: 0.01em;
+}
+
+.sh-btn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-golden);
+}
+
+.sh-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  background: var(--color-primary-dark);
+}
+
+.sh-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Botón secundario / outline */
+.sh-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.sh-btn-ghost:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+}
+
+/* Botón de peligro */
+.sh-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 18px;
+  background: rgba(255, 68, 68, 0.12);
+  color: var(--color-error);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(255, 68, 68, 0.25);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sh-btn-danger:hover {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: rgba(255, 68, 68, 0.5);
+}
+
+/* Mensaje de error inline */
+.sh-field-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  color: var(--color-error);
+  font-size: 0.8125rem;
+}
+
+/* Alerta general */
+.sh-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.sh-alert--error {
+  background: var(--color-error-bg);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #FF7777;
+}
+
+.sh-alert--success {
+  background: var(--color-success-bg);
+  border: 1px solid rgba(68, 187, 68, 0.3);
+  color: #66DD66;
+}
+
+/* Badge de rol */
+.sh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sh-badge--admin {
+  background: var(--color-role-admin-bg);
+  color: var(--color-role-admin);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.sh-badge--conductor {
+  background: var(--color-role-conductor-bg);
+  color: var(--color-role-conductor);
+  border: 1px solid rgba(245, 197, 24, 0.3);
+}
+
+.sh-badge--apoderado {
+  background: var(--color-role-apoderado-bg);
+  color: var(--color-role-apoderado);
+  border: 1px solid rgba(74, 158, 255, 0.3);
+}
+
+/* Spinner de carga */
+.sh-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(13, 13, 13, 0.3);
+  border-top-color: var(--color-text-on-primary);
+  border-radius: 50%;
+  animation: sh-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.sh-spinner--dark {
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: var(--color-primary);
+}
+
+@keyframes sh-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Divisor de sección */
+.sh-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-6) 0;
+}
+
+/* Label de campo */
+.sh-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* Card base */
+.sh-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
