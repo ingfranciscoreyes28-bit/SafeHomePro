@@ -110,12 +110,19 @@ export default function Registro() {
 
     // Insertar en la tabla perfil si el usuario fue creado correctamente
     if (data?.user) {
-      await supabase.from('perfil').upsert({
+      const { error: perfilError } = await supabase.from('perfil').insert({
         id: data.user.id,
         nombre: nombre.trim(),
         tipo_usuario: tipoUsuario,
-        correo: correo.trim().toLowerCase(),
+        rut: '',
+        telefono: '',
       })
+
+      if (perfilError) {
+        setCargando(false)
+        setErrorGeneral('Cuenta creada, pero no se pudo guardar tu perfil. Contacta a soporte.')
+        return
+      }
     }
 
     setCargando(false)

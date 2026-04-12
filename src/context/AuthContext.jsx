@@ -12,16 +12,13 @@ export function AuthProvider({ children }) {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUsuario(session?.user ?? null)
-      if (session?.user) obtenerPerfil(session.user.id)
-      else setCargando(false)
-    })
-
+    // onAuthStateChange fires immediately with the current session,
+    // so we only need this listener — no separate getSession call needed.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUsuario(session?.user ?? null)
-      if (session?.user) obtenerPerfil(session.user.id)
-      else {
+      if (session?.user) {
+        obtenerPerfil(session.user.id)
+      } else {
         setPerfil(null)
         setCargando(false)
       }
@@ -31,13 +28,19 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function obtenerPerfil(id) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('perfil')
       .select('*')
       .eq('id', id)
       .single()
 
-    setPerfil(data)
+    // PGRST116 = no rows found (profile not yet created or was deleted).
+    // Any other error is unexpected but we still unblock the UI.
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error al cargar perfil:', error)
+    }
+
+    setPerfil(data ?? null)
     setCargando(false)
   }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../services/supabase'
 import '../styles/global.css'
 import '../styles/Dashboard.css'
 
@@ -31,19 +32,47 @@ function obtenerSaludo() {
 }
 
 // ============================================================
+// Spinner de carga (respeta diseño oscuro/dorado)
+// ============================================================
+
+function SpinnerSeccion() {
+  return (
+    <div className="dashboard-loading" style={{ minHeight: '200px' }}>
+      <div className="dashboard-loading__spinner" aria-hidden="true" />
+      <p className="dashboard-loading__text">Cargando datos...</p>
+    </div>
+  )
+}
+
+function MensajeError({ mensaje }) {
+  return (
+    <div
+      style={{
+        padding: 'var(--space-6)',
+        background: 'rgba(239,68,68,0.1)',
+        border: '1px solid rgba(239,68,68,0.3)',
+        borderRadius: 'var(--radius-lg)',
+        color: '#fca5a5',
+        textAlign: 'center',
+        fontSize: '0.9375rem',
+      }}
+    >
+      ⚠️ {mensaje}
+    </div>
+  )
+}
+
+// ============================================================
 // Sub-componentes por rol
 // ============================================================
 
 function PanelAdmin({ perfil }) {
-  const stats = [
-    { icon: '🚌', value: '8', label: 'Furgones activos', trend: '+1 este mes' },
-    { icon: '👨‍✼', value: '8', label: 'Conductores', trend: 'Sin cambios' },
-    { icon: '👨‍👩‍👧', value: '47', label: 'Apoderados', trend: '+3 esta semana' },
-    { icon: '🧒', value: '64', label: 'Estudiantes', trend: '+5 esta semana' },
-  ]
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [dashboardData, setDashboardData] = useState({})
 
   const acciones = [
-    { icon: '👨‍✼', iconClass: 'gold', title: 'Gestionar conductores', desc: 'Agregar, editar o eliminar conductores' },
+    { icon: '👨‍✈️', iconClass: 'gold', title: 'Gestionar conductores', desc: 'Agregar, editar o eliminar conductores' },
     { icon: '🚌', iconClass: 'blue', title: 'Gestionar furgones', desc: 'Vehículos y patentes registradas' },
     { icon: '📍', iconClass: 'green', title: 'Ver rutas activas', desc: 'Rutas en tiempo real' },
     { icon: '👨‍👩‍👧', iconClass: 'purple', title: 'Gestionar apoderados', desc: 'Familias y estudiantes inscritos' },
@@ -51,11 +80,50 @@ function PanelAdmin({ perfil }) {
     { icon: '🔔', iconClass: 'blue', title: 'Notificaciones', desc: 'Alertas y avisos de la plataforma' },
   ]
 
-  const rutasRecientes = [
-    { nombre: 'Ruta Norte — Las Condes', conductor: 'Carlos Pérez', estado: 'En curso' },
-    { nombre: 'Ruta Sur — La Florida', conductor: 'Ana Torres', estado: 'Completada' },
-    { nombre: 'Ruta Centro — Providencia', conductor: 'Luis Mora', estado: 'En curso' },
+  useEffect(() => {
+    fetchAdminData()
+  }, [])
+
+  async function fetchAdminData() {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const [furgones, conductores, apoderados, estudiantes] = await Promise.all([
+        supabase.from('furgon').select('*', { count: 'exact', head: true }),
+        supabase.from('perfil').select('*', { count: 'exact', head: true }).eq('tipo_usuario', 'conductor'),
+        supabase.from('perfil').select('*', { count: 'exact', head: true }).eq('tipo_usuario', 'apoderado'),
+        supabase.from('estudiante').select('*', { count: 'exact', head: true }),
+      ])
+
+      if (furgones.error) throw furgones.error
+      if (conductores.error) throw conductores.error
+      if (apoderados.error) throw apoderados.error
+      if (estudiantes.error) throw estudiantes.error
+
+      setDashboardData({
+        totalFurgones: furgones.count ?? 0,
+        totalConductores: conductores.count ?? 0,
+        totalApoderados: apoderados.count ?? 0,
+        totalEstudiantes: estudiantes.count ?? 0,
+      })
+    } catch (err) {
+      console.error('Error al cargar datos de admin:', err)
+      setError('No se pudieron cargar las estadísticas. Intenta recargar la página.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const stats = [
+    { icon: '🚌', value: dashboardData.totalFurgones ?? 0, label: 'Furgones activos', trend: 'Total registrados' },
+    { icon: '👨‍✈️', value: dashboardData.totalConductores ?? 0, label: 'Conductores', trend: 'Total registrados' },
+    { icon: '👨‍👩‍👧', value: dashboardData.totalApoderados ?? 0, label: 'Apoderados', trend: 'Total registrados' },
+    { icon: '🧒', value: dashboardData.totalEstudiantes ?? 0, label: 'Estudiantes', trend: 'Total registrados' },
   ]
+
+  if (loading) return <SpinnerSeccion />
+  if (error) return <MensajeError mensaje={error} />
 
   return (
     <>
@@ -95,60 +163,65 @@ function PanelAdmin({ perfil }) {
           ))}
         </div>
       </div>
-
-      {/* Rutas activas */}
-      <div className="dashboard-section">
-        <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">🚦 Rutas de hoy</h2>
-        </div>
-        <div className="dashboard-table-card">
-          <div className="dashboard-table-card__header">
-            <span className="dashboard-table-card__title">📋 Listado de rutas</span>
-            <span className="sh-badge sh-badge--conductor">
-              <span className="dashboard-info-card__status-dot dashboard-info-card__status-dot--pulse" />
-              En tiempo real
-            </span>
-          </div>
-          {rutasRecientes.map((r, i) => (
-            <div className="dashboard-table-row" key={i}>
-              <span className="dashboard-table-row__icon">🚌</span>
-              <span className="dashboard-table-row__primary">{r.nombre}</span>
-              <span className="dashboard-table-row__secondary" style={{ color: 'var(--color-text-secondary)', marginRight: 'var(--space-4)' }}>
-                {r.conductor}
-              </span>
-              <span
-                className={`dashboard-info-card__status ${
-                  r.estado === 'En curso'
-                    ? 'dashboard-info-card__status--active'
-                    : 'dashboard-info-card__status--inactive'
-                }`}
-              >
-                <span className="dashboard-info-card__status-dot" />
-                {r.estado}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
     </>
   )
 }
 
-function PanelConductor({ perfil }) {
+function PanelConductor({ perfil, usuario }) {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [dashboardData, setDashboardData] = useState({ furgon: null, estudiantes: [] })
   const [asistencia, setAsistencia] = useState({})
 
-  const estudiantes = [
-    { id: 1, nombre: 'Sofía Ramírez', curso: '3° Básico', direccion: 'Av. Las Flores 123' },
-    { id: 2, nombre: 'Diego Muñoz', curso: '5° Básico', direccion: 'Calle Los Pinos 45' },
-    { id: 3, nombre: 'Valentina López', curso: '1° Básico', direccion: 'Pasaje El Roble 8' },
-    { id: 4, nombre: 'Matías Soto', curso: '4° Básico', direccion: 'Av. Principal 200' },
-    { id: 5, nombre: 'Isidora Vega', curso: '2° Básico', direccion: 'Los Cerezos 77' },
-  ]
+  useEffect(() => {
+    if (usuario?.id) fetchConductorData()
+  }, [usuario?.id])
+
+  async function fetchConductorData() {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Obtener furgón asignado al conductor
+      const { data: furgonData, error: furgonError } = await supabase
+        .from('furgon')
+        .select('*')
+        .eq('id_conductor', usuario.id)
+        .single()
+
+      if (furgonError && furgonError.code !== 'PGRST116') throw furgonError
+
+      let estudiantesData = []
+      if (furgonData?.id) {
+        const { data, error: estudiantesError } = await supabase
+          .from('estudiante')
+          .select('*')
+          .eq('id_furgon', furgonData.id)
+
+        if (estudiantesError) throw estudiantesError
+        estudiantesData = data ?? []
+      }
+
+      setDashboardData({
+        furgon: furgonData ?? null,
+        estudiantes: estudiantesData,
+      })
+    } catch (err) {
+      console.error('Error al cargar datos de conductor:', err)
+      setError('No se pudieron cargar los datos de tu ruta. Intenta recargar la página.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   function toggleAsistencia(id) {
     setAsistencia(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
+  if (loading) return <SpinnerSeccion />
+  if (error) return <MensajeError mensaje={error} />
+
+  const { furgon, estudiantes } = dashboardData
   const totalPresentes = Object.values(asistencia).filter(Boolean).length
 
   return (
@@ -158,50 +231,73 @@ function PanelConductor({ perfil }) {
         <div className="dashboard-section__header">
           <h2 className="dashboard-section__title">🗺️ Tu ruta de hoy</h2>
         </div>
-        <div className="dashboard-info-card">
-          <div className="dashboard-info-card__header">
-            <span className="dashboard-info-card__header-icon">🚌</span>
-            <span className="dashboard-info-card__header-title">Ruta Norte — Las Condes</span>
-            <span className="dashboard-info-card__status dashboard-info-card__status--active">
-              <span className="dashboard-info-card__status-dot dashboard-info-card__status-dot--pulse" />
-              Activa
-            </span>
-          </div>
-          <div className="dashboard-info-card__body">
-            <div className="dashboard-data-rows">
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">🚗</span>
-                  Vehículo
-                </span>
-                <span className="dashboard-data-row__value">Minibús — BCZR90</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">🏫</span>
-                  Colegio
-                </span>
-                <span className="dashboard-data-row__value">Colegio San Patricio</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">⏰</span>
-                  Hora de salida
-                </span>
-                <span className="dashboard-data-row__value">07:30 hrs</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">📍</span>
-                  Próxima parada
-                </span>
-                <span className="dashboard-data-row__value" style={{ color: 'var(--color-primary)' }}>
-                  Av. Las Flores 123
-                </span>
+        {furgon ? (
+          <div className="dashboard-info-card">
+            <div className="dashboard-info-card__header">
+              <span className="dashboard-info-card__header-icon">🚌</span>
+              <span className="dashboard-info-card__header-title">
+                {furgon.nombre ?? 'Furgón asignado'}
+              </span>
+              <span className="dashboard-info-card__status dashboard-info-card__status--active">
+                <span className="dashboard-info-card__status-dot dashboard-info-card__status-dot--pulse" />
+                Activa
+              </span>
+            </div>
+            <div className="dashboard-info-card__body">
+              <div className="dashboard-data-rows">
+                <div className="dashboard-data-row">
+                  <span className="dashboard-data-row__label">
+                    <span className="dashboard-data-row__label-icon">🚗</span>
+                    Vehículo
+                  </span>
+                  <span className="dashboard-data-row__value">
+                    {furgon.tipo ?? 'Minibús'} — {furgon.patente ?? 'Sin patente'}
+                  </span>
+                </div>
+                {furgon.colegio && (
+                  <div className="dashboard-data-row">
+                    <span className="dashboard-data-row__label">
+                      <span className="dashboard-data-row__label-icon">🏫</span>
+                      Colegio
+                    </span>
+                    <span className="dashboard-data-row__value">{furgon.colegio}</span>
+                  </div>
+                )}
+                {furgon.hora_salida && (
+                  <div className="dashboard-data-row">
+                    <span className="dashboard-data-row__label">
+                      <span className="dashboard-data-row__label-icon">⏰</span>
+                      Hora de salida
+                    </span>
+                    <span className="dashboard-data-row__value">{furgon.hora_salida} hrs</span>
+                  </div>
+                )}
+                <div className="dashboard-data-row">
+                  <span className="dashboard-data-row__label">
+                    <span className="dashboard-data-row__label-icon">🧒</span>
+                    Estudiantes asignados
+                  </span>
+                  <span className="dashboard-data-row__value" style={{ color: 'var(--color-primary)' }}>
+                    {estudiantes.length} estudiante{estudiantes.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div
+            style={{
+              padding: 'var(--space-6)',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              color: 'var(--color-text-muted)',
+              textAlign: 'center',
+            }}
+          >
+            No tienes un furgón asignado por el momento.
+          </div>
+        )}
       </div>
 
       {/* Estadísticas rápidas */}
@@ -226,175 +322,229 @@ function PanelConductor({ perfil }) {
       </div>
 
       {/* Lista de estudiantes */}
-      <div className="dashboard-section">
-        <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">🧒 Lista de estudiantes</h2>
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
-            Toca el círculo para marcar asistencia
-          </span>
-        </div>
-        <div className="dashboard-student-list">
-          {estudiantes.map(est => (
-            <div className="dashboard-student-item" key={est.id}>
-              <div className="dashboard-student-item__avatar">
-                {obtenerIniciales(est.nombre)}
-              </div>
-              <div className="dashboard-student-item__info">
-                <div className="dashboard-student-item__name">{est.nombre}</div>
-                <div className="dashboard-student-item__meta">
-                  {est.curso} · {est.direccion}
+      {estudiantes.length > 0 && (
+        <div className="dashboard-section">
+          <div className="dashboard-section__header">
+            <h2 className="dashboard-section__title">🧒 Lista de estudiantes</h2>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
+              Toca el círculo para marcar asistencia
+            </span>
+          </div>
+          <div className="dashboard-student-list">
+            {estudiantes.map(est => (
+              <div className="dashboard-student-item" key={est.id}>
+                <div className="dashboard-student-item__avatar">
+                  {obtenerIniciales(est.nombre)}
                 </div>
+                <div className="dashboard-student-item__info">
+                  <div className="dashboard-student-item__name">{est.nombre}</div>
+                  <div className="dashboard-student-item__meta">
+                    {est.curso ? `${est.curso}` : 'Sin curso'}{est.direccion ? ` · ${est.direccion}` : ''}
+                  </div>
+                </div>
+                <button
+                  className={`dashboard-student-item__check${asistencia[est.id] ? ' dashboard-student-item__check--checked' : ''}`}
+                  onClick={() => toggleAsistencia(est.id)}
+                  aria-label={`Marcar asistencia de ${est.nombre}`}
+                  title={asistencia[est.id] ? 'Presente' : 'Marcar como presente'}
+                >
+                  {asistencia[est.id] ? '✅' : '○'}
+                </button>
               </div>
-              <button
-                className={`dashboard-student-item__check${asistencia[est.id] ? ' dashboard-student-item__check--checked' : ''}`}
-                onClick={() => toggleAsistencia(est.id)}
-                aria-label={`Marcar asistencia de ${est.nombre}`}
-                title={asistencia[est.id] ? 'Presente' : 'Marcar como presente'}
-              >
-                {asistencia[est.id] ? '✅' : '○'}
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </>
   )
 }
 
-function PanelApoderado({ perfil }) {
-  const notificaciones = [
-    {
-      id: 1,
-      icon: '🚌',
-      title: 'El furgón está en camino',
-      text: 'El conductor Carlos Pérez salió hace 10 minutos. Llegará en aproximadamente 15 min.',
-      time: 'Hace 10 min',
-      noLeida: true,
-    },
-    {
-      id: 2,
-      icon: '✅',
-      title: 'Sofía abordó el furgón',
-      text: 'Tu hija Sofía Ramírez fue registrada a bordo del furgón a las 07:45 hrs.',
-      time: 'Hoy 07:45',
-      noLeida: true,
-    },
-    {
-      id: 3,
-      icon: '🏫',
-      title: 'Llegada al colegio confirmada',
-      text: 'El furgón llegó al Colegio San Patricio con todos los estudiantes.',
-      time: 'Hoy 08:10',
-      noLeida: false,
-    },
-    {
-      id: 4,
-      icon: '📋',
-      title: 'Recordatorio de pago mensual',
-      text: 'El pago del mes de Abril vence el día 15. Monto: $45.000.',
-      time: 'Ayer',
-      noLeida: false,
-    },
-  ]
+function PanelApoderado({ perfil, usuario }) {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [dashboardData, setDashboardData] = useState({ estudiantes: [], furgon: null, conductor: null })
+
+  useEffect(() => {
+    if (usuario?.id) fetchApoderadoData()
+  }, [usuario?.id])
+
+  async function fetchApoderadoData() {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Obtener estudiantes del apoderado
+      const { data: estudiantesData, error: estudiantesError } = await supabase
+        .from('estudiante')
+        .select('*')
+        .eq('id_apoderado', usuario.id)
+
+      if (estudiantesError) throw estudiantesError
+
+      const estudiantes = estudiantesData ?? []
+      let furgonData = null
+      let conductorData = null
+
+      // Si tiene estudiantes y alguno tiene furgón asignado, buscarlo
+      const idFurgon = estudiantes.find(e => e.id_furgon)?.id_furgon
+      if (idFurgon) {
+        const { data: furgon, error: furgonError } = await supabase
+          .from('furgon')
+          .select('*')
+          .eq('id', idFurgon)
+          .single()
+
+        if (furgonError && furgonError.code !== 'PGRST116') throw furgonError
+        furgonData = furgon ?? null
+
+        // Obtener datos del conductor si el furgón tiene uno asignado
+        if (furgonData?.id_conductor) {
+          const { data: conductor, error: conductorError } = await supabase
+            .from('perfil')
+            .select('*')
+            .eq('id', furgonData.id_conductor)
+            .single()
+
+          if (conductorError && conductorError.code !== 'PGRST116') throw conductorError
+          conductorData = conductor ?? null
+        }
+      }
+
+      setDashboardData({ estudiantes, furgon: furgonData, conductor: conductorData })
+    } catch (err) {
+      console.error('Error al cargar datos de apoderado:', err)
+      setError('No se pudieron cargar los datos de tus estudiantes. Intenta recargar la página.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) return <SpinnerSeccion />
+  if (error) return <MensajeError mensaje={error} />
+
+  const { estudiantes, furgon, conductor } = dashboardData
 
   return (
     <>
       {/* Info del conductor */}
       <div className="dashboard-section">
         <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">👨‍✼ Tu conductor asignado</h2>
+          <h2 className="dashboard-section__title">👨‍✈️ Tu conductor asignado</h2>
         </div>
-        <div className="dashboard-info-card">
-          <div className="dashboard-info-card__header">
-            <span className="dashboard-info-card__header-icon">🚌</span>
-            <span className="dashboard-info-card__header-title">Carlos Pérez — Ruta Norte</span>
-            <span className="dashboard-info-card__status dashboard-info-card__status--active">
-              <span className="dashboard-info-card__status-dot dashboard-info-card__status-dot--pulse" />
-              En ruta
-            </span>
-          </div>
-          <div className="dashboard-info-card__body">
-            <div className="dashboard-data-rows">
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">📞</span>
-                  Teléfono
-                </span>
-                <span className="dashboard-data-row__value">+56 9 8765 4321</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">🚗</span>
-                  Vehículo
-                </span>
-                <span className="dashboard-data-row__value">Minibús — Patente BCZR90</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">⏰</span>
-                  Hora de recogida
-                </span>
-                <span className="dashboard-data-row__value">07:30 hrs (estimado)</span>
-              </div>
-              <div className="dashboard-data-row">
-                <span className="dashboard-data-row__label">
-                  <span className="dashboard-data-row__label-icon">📍</span>
-                  Ubicación actual
-                </span>
-                <span className="dashboard-data-row__value" style={{ color: 'var(--color-primary)' }}>
-                  Av. Las Flores · En camino
-                </span>
+        {furgon ? (
+          <div className="dashboard-info-card">
+            <div className="dashboard-info-card__header">
+              <span className="dashboard-info-card__header-icon">🚌</span>
+              <span className="dashboard-info-card__header-title">
+                {conductor?.nombre ?? 'Conductor'} — {furgon.nombre ?? 'Furgón asignado'}
+              </span>
+              <span className="dashboard-info-card__status dashboard-info-card__status--active">
+                <span className="dashboard-info-card__status-dot dashboard-info-card__status-dot--pulse" />
+                En ruta
+              </span>
+            </div>
+            <div className="dashboard-info-card__body">
+              <div className="dashboard-data-rows">
+                {conductor?.telefono && (
+                  <div className="dashboard-data-row">
+                    <span className="dashboard-data-row__label">
+                      <span className="dashboard-data-row__label-icon">📞</span>
+                      Teléfono
+                    </span>
+                    <span className="dashboard-data-row__value">{conductor.telefono}</span>
+                  </div>
+                )}
+                <div className="dashboard-data-row">
+                  <span className="dashboard-data-row__label">
+                    <span className="dashboard-data-row__label-icon">🚗</span>
+                    Vehículo
+                  </span>
+                  <span className="dashboard-data-row__value">
+                    {furgon.tipo ?? 'Minibús'} — Patente {furgon.patente ?? 'Sin patente'}
+                  </span>
+                </div>
+                {furgon.hora_salida && (
+                  <div className="dashboard-data-row">
+                    <span className="dashboard-data-row__label">
+                      <span className="dashboard-data-row__label-icon">⏰</span>
+                      Hora de recogida
+                    </span>
+                    <span className="dashboard-data-row__value">{furgon.hora_salida} hrs (estimado)</span>
+                  </div>
+                )}
+                {furgon.colegio && (
+                  <div className="dashboard-data-row">
+                    <span className="dashboard-data-row__label">
+                      <span className="dashboard-data-row__label-icon">🏫</span>
+                      Colegio
+                    </span>
+                    <span className="dashboard-data-row__value">{furgon.colegio}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div
+            style={{
+              padding: 'var(--space-6)',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              color: 'var(--color-text-muted)',
+              textAlign: 'center',
+            }}
+          >
+            No tienes un furgón asignado por el momento.
+          </div>
+        )}
       </div>
 
-      {/* Estado del estudiante */}
-      <div className="dashboard-section">
-        <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">🧒 Estado de tu hijo/a hoy</h2>
-        </div>
-        <div className="dashboard-stats-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-          <div className="dashboard-stat-card">
-            <div className="dashboard-stat-card__icon">✅</div>
-            <div className="dashboard-stat-card__value" style={{ fontSize: '1.25rem' }}>A bordo</div>
-            <div className="dashboard-stat-card__label">Sofía Ramírez — 3° Básico</div>
-            <div className="dashboard-stat-card__trend">Registrada a las 07:45</div>
+      {/* Estado de los estudiantes */}
+      {estudiantes.length > 0 && (
+        <div className="dashboard-section">
+          <div className="dashboard-section__header">
+            <h2 className="dashboard-section__title">🧒 Estado de tus hijos hoy</h2>
           </div>
-          <div className="dashboard-stat-card">
-            <div className="dashboard-stat-card__icon">🏫</div>
-            <div className="dashboard-stat-card__value" style={{ fontSize: '1.25rem' }}>Llegó</div>
-            <div className="dashboard-stat-card__label">Colegio San Patricio</div>
-            <div className="dashboard-stat-card__trend">Llegada a las 08:10</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Notificaciones */}
-      <div className="dashboard-section">
-        <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">🔔 Notificaciones recientes</h2>
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-primary)', fontWeight: 500, cursor: 'pointer' }}>
-            Ver todas
-          </span>
-        </div>
-        <div className="dashboard-notifications">
-          {notificaciones.map(n => (
-            <div
-              key={n.id}
-              className={`dashboard-notification${n.noLeida ? ' dashboard-notification--unread' : ''}`}
-            >
-              <span className="dashboard-notification__icon">{n.icon}</span>
-              <div className="dashboard-notification__content">
-                <div className="dashboard-notification__title">{n.title}</div>
-                <div className="dashboard-notification__text">{n.text}</div>
+          <div
+            className="dashboard-stats-grid"
+            style={{ gridTemplateColumns: estudiantes.length === 1 ? 'repeat(2, 1fr)' : `repeat(${Math.min(estudiantes.length, 3)}, 1fr)` }}
+          >
+            {estudiantes.map(est => (
+              <div className="dashboard-stat-card" key={est.id}>
+                <div className="dashboard-stat-card__icon">🧒</div>
+                <div className="dashboard-stat-card__value" style={{ fontSize: '1.25rem' }}>
+                  {est.nombre?.split(' ')[0] ?? 'Estudiante'}
+                </div>
+                <div className="dashboard-stat-card__label">
+                  {est.nombre} {est.curso ? `— ${est.curso}` : ''}
+                </div>
+                <div className="dashboard-stat-card__trend">
+                  {est.id_furgon ? 'Con furgón asignado' : 'Sin furgón asignado'}
+                </div>
               </div>
-              <span className="dashboard-notification__time">{n.time}</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Sin estudiantes */}
+      {estudiantes.length === 0 && (
+        <div className="dashboard-section">
+          <div
+            style={{
+              padding: 'var(--space-6)',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-lg)',
+              color: 'var(--color-text-muted)',
+              textAlign: 'center',
+            }}
+          >
+            No tienes estudiantes registrados aún.
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -418,7 +568,7 @@ export default function Dashboard() {
     navigate('/login')
   }
 
-  // Pantalla de carga
+  // Pantalla de carga de auth
   if (cargando) {
     return (
       <div className="dashboard-loading">
@@ -506,8 +656,8 @@ export default function Dashboard() {
 
         {/* Panel según rol */}
         {tipoUsuario === 'admin' && <PanelAdmin perfil={perfil} />}
-        {tipoUsuario === 'conductor' && <PanelConductor perfil={perfil} />}
-        {tipoUsuario === 'apoderado' && <PanelApoderado perfil={perfil} />}
+        {tipoUsuario === 'conductor' && <PanelConductor perfil={perfil} usuario={usuario} />}
+        {tipoUsuario === 'apoderado' && <PanelApoderado perfil={perfil} usuario={usuario} />}
 
       </main>
     </div>
