@@ -6,6 +6,7 @@ import '../styles/Login.css'
 import ChatSafeHome from "../components/ChatSafeHome";
 
 export default function Login() {
+  const [chatAbierto, setChatAbierto] = useState(false);
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
   const [mostrarPassword, setMostrarPassword] = useState(false)
@@ -203,15 +204,51 @@ export default function Login() {
 
       </div>
 
-{/* ✅ CHAT INTEGRADO (SIN ROMPER NADA) */}
+{/* BOTÓN + CHAT */}
 <div style={{
-                position: "fixed",
-                bottom: "20px",
-                right: "20px",
-                zIndex: 999
-              }}>
-                <ChatSafeHome />
-              </div>
+  position: "fixed",
+  bottom: "30px",
+  right: "30px",
+  zIndex: 999
+}}>
+
+<div style={{
+  marginBottom: "10px",
+  display: chatAbierto ? "block" : "none"
+}}>
+  <ChatSafeHome />
+</div>
+
+<button
+  onClick={() => setChatAbierto(prev => !prev)}
+  style={{
+    width: "90px",              // 👈 tamaño como el círculo rojo
+    height: "90px",
+    borderRadius: "50%",
+    border: "none",
+    cursor: "pointer",
+    background: "#FFC107",
+    color: "#000",
+    fontSize: "50px",           // 👈 robot más grande
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 0 20px rgba(255,193,7,0.7)",
+    transition: "all 0.25s ease"
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = "scale(1.1)";
+    e.currentTarget.style.boxShadow = "0 0 25px rgba(255,193,7,1)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = "scale(1)";
+    e.currentTarget.style.boxShadow = "0 0 20px rgba(255,193,7,0.7)";
+  }}
+>
+  🤖
+</button>
+
+</div>
 
 
 

@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
 import '../styles/Perfil.css'
+import ChatWidget from "../components/ChatWidget";
+
 
 function Toast({ mensaje, tipo, onClose }) {
   useEffect(() => {
@@ -240,6 +242,9 @@ export default function Perfil() {
           </button>
         </div>
       </form>
+
+      
+    <ChatWidget />
     </div>
   )
 }

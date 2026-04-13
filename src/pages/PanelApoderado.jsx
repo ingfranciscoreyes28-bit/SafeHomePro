@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
 import '../styles/PanelApoderado.css'
+import ChatWidget from "../components/ChatWidget";
+
 
 const formatMonto = m =>
   m == null
@@ -194,6 +196,8 @@ export default function PanelApoderado() {
               )
             })}
           </div>
+
+          <ChatWidget />
         </>
       )}
     </div>

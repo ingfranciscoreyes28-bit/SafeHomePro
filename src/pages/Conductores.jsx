@@ -5,6 +5,7 @@ import FormConductor from '../components/FormConductor'
 import ModalConfirmar from '../components/ModalConfirmar'
 import '../styles/global.css'
 import '../styles/Conductores.css'
+import ChatWidget from "../components/ChatWidget";
 
 export default function Conductores() {
   const [conductores, setConductores] = useState([])
@@ -236,6 +237,10 @@ export default function Conductores() {
         />
       )}
 
+      
+    <ChatWidget />
+
     </div>
+    
   )
 }

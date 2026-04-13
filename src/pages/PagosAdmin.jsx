@@ -4,6 +4,7 @@ import TablaPagos from '../components/TablaPagos'
 import ModalConfirmar from '../components/ModalConfirmar'
 import '../styles/Pagos.css'
 import '../styles/Conductores.css'
+import ChatWidget from "../components/ChatWidget";
 
 function Toast({ mensaje, tipo, onClose }) {
   useEffect(() => {
@@ -331,6 +332,9 @@ export default function PagosAdmin() {
           cargando={borrando}
         />
       )}
+
+
+<ChatWidget />
     </div>
   )
 }

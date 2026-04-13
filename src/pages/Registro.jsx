@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import '../styles/global.css'
 import '../styles/Registro.css'
+import ChatWidget from "../components/ChatWidget";
 
 const ROLE_TIPS = {
   apoderado: {
@@ -401,7 +402,11 @@ export default function Registro() {
           <Link to="/login">Inicia sesión</Link>
         </div>
 
+
+
+
       </div>
+      <ChatWidget />
     </div>
   )
 }

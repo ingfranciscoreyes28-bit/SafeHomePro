@@ -5,6 +5,7 @@ import FormEstudiante from '../components/FormEstudiante'
 import ModalConfirmar from '../components/ModalConfirmar'
 import '../styles/Estudiantes.css'
 import '../styles/Conductores.css'
+import ChatWidget from "../components/ChatWidget";
 
 function Toast({ mensaje, tipo, onClose }) {
   useEffect(() => {
@@ -151,6 +152,10 @@ export default function Estudiantes() {
           cargando={borrando}
         />
       )}
+
+<ChatWidget />
+
+
     </div>
   )
 }

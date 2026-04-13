@@ -4,6 +4,7 @@ import TablaApoderados from '../components/TablaApoderados'
 import ModalConfirmar from '../components/ModalConfirmar'
 import '../styles/Apoderados.css'
 import '../styles/Conductores.css'
+import ChatWidget from "../components/ChatWidget";
 
 function Toast({ mensaje, tipo, onClose }) {
   useEffect(() => {
@@ -230,6 +231,9 @@ export default function Apoderados() {
           cargando={borrando}
         />
       )}
+
+      
+    <ChatWidget />
     </div>
   )
 }

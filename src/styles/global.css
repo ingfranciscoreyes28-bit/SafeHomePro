@@ -413,3 +413,135 @@ a:hover {
   padding: var(--space-6);
   box-shadow: var(--shadow-card);
 }
+
+/* CONTENEDOR PRINCIPAL */
+.sh-chat {
+  width: 320px;
+  height: 480px;
+  background: #121212;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #2a2a2a;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6),
+              0 0 15px rgba(255, 193, 7, 0.15);
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* HEADER */
+.sh-chat-header {
+  padding: 14px;
+  background: linear-gradient(135deg, #1e1e1e, #181818);
+  color: #ffc107;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #2a2a2a;
+  letter-spacing: 0.5px;
+}
+
+/* BODY */
+.sh-chat-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* SCROLL */
+.sh-chat-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sh-chat-body::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
+/* MENSAJES */
+.sh-chat-msg {
+  display: flex;
+  margin-bottom: 10px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.sh-chat-msg.user {
+  justify-content: flex-end;
+}
+
+.sh-chat-msg.bot {
+  justify-content: flex-start;
+}
+
+/* BURBUJAS */
+.sh-chat-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  max-width: 75%;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* USUARIO */
+.sh-chat-msg.user .sh-chat-bubble {
+  background: #ffc107;
+  color: #000;
+  box-shadow: 0 0 12px rgba(255,193,7,0.4);
+}
+
+/* BOT */
+.sh-chat-msg.bot .sh-chat-bubble {
+  background: #1e1e1e;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+}
+
+/* INPUT */
+.sh-chat-input {
+  display: flex;
+  border-top: 1px solid #2a2a2a;
+  background: #1e1e1e;
+  padding: 6px;
+}
+
+/* INPUT TEXT */
+.sh-chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: white;
+  outline: none;
+  font-size: 14px;
+}
+
+/* BOTÓN */
+.sh-chat-input button {
+  background: #ffc107;
+  border: none;
+  padding: 0 16px;
+  margin-left: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+/* HOVER BOTÓN */
+.sh-chat-input button:hover {
+  background: #ffca2c;
+  transform: scale(1.05);
+}
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

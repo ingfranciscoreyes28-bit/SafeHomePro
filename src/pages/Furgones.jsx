@@ -5,6 +5,7 @@ import FormFurgon from '../components/FormFurgon'
 import ModalConfirmar from '../components/ModalConfirmar'
 import '../styles/global.css'
 import '../styles/Furgones.css'
+import ChatWidget from "../components/ChatWidget";
 
 export default function Furgones() {
   const [furgones, setFurgones]         = useState([])
@@ -165,6 +166,10 @@ export default function Furgones() {
           cargando={eliminandoCargando}
         />
       )}
+
+      
+
+<ChatWidget />
 
     </div>
   )

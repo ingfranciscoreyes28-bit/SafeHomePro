@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../services/supabase'
 import '../styles/global.css'
 import '../styles/Dashboard.css'
-
+import ChatWidget from "../components/ChatWidget";
 // ============================================================
 // Helpers
 // ============================================================
@@ -195,6 +195,9 @@ export default function Dashboard() {
       </div>
 
       <PanelAdmin />
+      <ChatWidget />
+
+      
 
     </div>
   )

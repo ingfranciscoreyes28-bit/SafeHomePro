@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
 import '../styles/PanelEstudiantes.css'
+import ChatWidget from "../components/ChatWidget";
 
 export default function PanelEstudiantes() {
   const { perfil } = useAuth()
@@ -177,6 +178,9 @@ export default function PanelEstudiantes() {
           )}
         </>
       )}
+
+
+<ChatWidget />
     </div>
   )
 }

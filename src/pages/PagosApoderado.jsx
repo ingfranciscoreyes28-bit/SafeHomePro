@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
 import '../styles/PagosApoderado.css'
+import ChatWidget from "../components/ChatWidget";
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -219,6 +220,12 @@ export default function PagosApoderado() {
           {/* TODO: integrar pasarela de pagos */}
         </>
       )}
+
+<ChatWidget />
+
+
+
+
     </div>
   )
 }
