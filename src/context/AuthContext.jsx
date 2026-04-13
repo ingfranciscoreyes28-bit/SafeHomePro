@@ -1,6 +1,3 @@
-// Todo lo que necesita saber la app sobre quién está conectado vive aquí.
-
-
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../services/supabase'
 
@@ -12,17 +9,28 @@ export function AuthProvider({ children }) {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    // onAuthStateChange fires immediately with the current session,
-    // so we only need this listener — no separate getSession call needed.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Primero recuperar sesión existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUsuario(session?.user ?? null)
       if (session?.user) {
         obtenerPerfil(session.user.id)
       } else {
-        setPerfil(null)
         setCargando(false)
       }
     })
+
+    // Luego escuchar cambios
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUsuario(session?.user ?? null)
+        if (session?.user) {
+          obtenerPerfil(session.user.id)
+        } else {
+          setPerfil(null)
+          setCargando(false)
+        }
+      }
+    )
 
     return () => subscription.unsubscribe()
   }, [])
@@ -34,8 +42,6 @@ export function AuthProvider({ children }) {
       .eq('id', id)
       .single()
 
-    // PGRST116 = no rows found (profile not yet created or was deleted).
-    // Any other error is unexpected but we still unblock the UI.
     if (error && error.code !== 'PGRST116') {
       console.error('Error al cargar perfil:', error)
     }
@@ -48,8 +54,23 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut()
   }
 
+  // Helper para saber si el conductor está pendiente
+  const esConductorPendiente =
+    perfil?.tipo_usuario === 'conductor' && perfil?.estado === 'pendiente'
+
+  // Helper para saber si fue rechazado
+  const esConductorRechazado =
+    perfil?.tipo_usuario === 'conductor' && perfil?.estado === 'rechazado'
+
   return (
-    <AuthContext.Provider value={{ usuario, perfil, cargando, cerrarSesion }}>
+    <AuthContext.Provider value={{
+      usuario,
+      perfil,
+      cargando,
+      cerrarSesion,
+      esConductorPendiente,
+      esConductorRechazado,
+    }}>
       {children}
     </AuthContext.Provider>
   )

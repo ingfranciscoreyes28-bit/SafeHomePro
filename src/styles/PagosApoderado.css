@@ -1,0 +1,230 @@
+/* ============================================================
+   SafeHome — PagosApoderado (historial de pagos del apoderado)
+   ============================================================ */
+
+.pagos-apod {
+  padding: var(--space-6);
+  max-width: 1200px;
+  position: relative;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+
+.pagos-apod__header {
+  margin-bottom: var(--space-6);
+}
+
+.pagos-apod__titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.pagos-apod__sub {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+
+.pagos-apod__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+/* ── Estado vacío ────────────────────────────────────────── */
+
+.pagos-apod__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-16);
+  text-align: center;
+}
+
+.pagos-apod__empty-icon  { font-size: 3rem; opacity: 0.4; }
+.pagos-apod__empty-msg { color: var(--color-text-muted); font-size: 0.9375rem; }
+
+/* ── Cards de resumen ────────────────────────────────────── */
+
+.pagos-apod-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.pagos-apod-resumen-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pagos-apod-resumen-card__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.pagos-apod-resumen-card__valor {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  line-height: 1.2;
+}
+
+.pagos-apod-resumen-card__valor--pagado   { color: var(--color-success); }
+.pagos-apod-resumen-card__valor--pendiente { color: var(--color-primary); }
+.pagos-apod-resumen-card__valor--atrasado  { color: var(--color-error); }
+
+/* ── Filtros ─────────────────────────────────────────────── */
+
+.pagos-apod-filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.pagos-apod-filtro-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.pagos-apod-filtro-btn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.pagos-apod-filtro-btn--activo {
+  background: var(--color-primary-faint);
+  border-color: var(--color-primary-glow);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Tabla ───────────────────────────────────────────────── */
+
+.pagos-apod-tabla-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.pagos-apod-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.pagos-apod-tabla thead {
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pagos-apod-tabla th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.pagos-apod-tabla td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.pagos-apod-tabla tbody tr:last-child td { border-bottom: none; }
+.pagos-apod-tabla tbody tr { transition: background var(--transition-fast); }
+.pagos-apod-tabla tbody tr:hover { background: var(--color-surface-2); }
+
+/* Monto destacado */
+.pagos-apod-monto {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+}
+
+/* ── Badges de estado ────────────────────────────────────── */
+
+.badge-pago-apod {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-pago-apod--pagado {
+  background: rgba(68, 187, 68, 0.12);
+  color: var(--color-success);
+  border: 1px solid rgba(68, 187, 68, 0.25);
+}
+
+.badge-pago-apod--pendiente {
+  background: var(--color-primary-faint);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-glow);
+}
+
+.badge-pago-apod--atrasado {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 68, 68, 0.25);
+}
+
+/* ── Vacío de filtro ─────────────────────────────────────── */
+
+.pagos-apod__filtro-vacio {
+  padding: var(--space-10);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* ── Responsivo ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .pagos-apod { padding: var(--space-4); }
+  .pagos-apod-resumen { grid-template-columns: 1fr; }
+  .pagos-apod-tabla th:nth-child(5),
+  .pagos-apod-tabla td:nth-child(5),
+  .pagos-apod-tabla th:nth-child(6),
+  .pagos-apod-tabla td:nth-child(6) { display: none; }
+}

@@ -1,0 +1,190 @@
+/* ============================================================
+   SafeHome — Pagos (CRUD admin)
+   ============================================================ */
+
+.pagos-page {
+  padding: var(--space-6);
+  max-width: 1200px;
+  position: relative;
+}
+
+.pagos-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.pagos-header__titulo { font-size: 1.5rem; font-weight: 700; color: var(--color-text); margin-bottom: var(--space-1); }
+.pagos-header__sub    { font-size: 0.875rem; color: var(--color-text-muted); }
+
+.pagos-header__acciones { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+
+/* ── Filtros ─────────────────────────────────────────────── */
+
+.pagos-filtros {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.pago-filtro-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+.pago-filtro-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+.pago-filtro-btn--activo {
+  background: var(--color-primary-faint);
+  border-color: var(--color-primary-glow);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Loading / vacío ─────────────────────────────────────── */
+
+.pagos-loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-4); padding: var(--space-16);
+  color: var(--color-text-muted); font-size: 0.9375rem;
+}
+
+.pagos-vacio { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: var(--space-16); text-align: center; }
+.pagos-vacio__icon  { font-size: 3rem; opacity: 0.4; }
+.pagos-vacio__texto { color: var(--color-text-muted); font-size: 0.9375rem; }
+
+/* ── Tabla ───────────────────────────────────────────────── */
+
+.pagos-tabla-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.pagos-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.pagos-tabla thead { background: var(--color-surface-2); border-bottom: 1px solid var(--color-border); }
+
+.pagos-tabla th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left; font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--color-text-muted); white-space: nowrap;
+}
+
+.pagos-tabla td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.pagos-tabla tbody tr:last-child td { border-bottom: none; }
+.pagos-tabla tbody tr { transition: background var(--transition-fast); cursor: pointer; }
+.pagos-tabla tbody tr:hover { background: var(--color-surface-2); }
+.pagos-tabla tbody tr.fila-pago-expandida { background: var(--color-surface-2); }
+.pagos-tabla tbody tr.fila-pago-expandida td { border-bottom: none; }
+
+/* Monto destacado */
+.pago-monto {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+}
+
+/* ── Badges de estado pago ───────────────────────────────── */
+
+.badge-pago {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+.badge-pago--pagado   { background: rgba(68,187,68,0.12);  color: var(--color-success); border: 1px solid rgba(68,187,68,0.25); }
+.badge-pago--pendiente{ background: var(--color-primary-faint); color: var(--color-primary); border: 1px solid var(--color-primary-glow); }
+.badge-pago--atrasado { background: var(--color-error-bg); color: var(--color-error); border: 1px solid rgba(255,68,68,0.25); }
+
+/* Panel expandible */
+.fila-pago-detalle td { padding: 0 !important; border-bottom: 1px solid var(--color-border); }
+
+.pago-panel-detalle {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4); padding: var(--space-4) var(--space-4) var(--space-4) var(--space-4);
+  background: var(--color-surface-2);
+  animation: pago-expand 0.15s ease;
+}
+@keyframes pago-expand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pago-chevron {
+  font-size: 1.125rem; color: var(--color-text-muted); margin-left: var(--space-2);
+  display: inline-block; transition: transform var(--transition-fast); line-height: 1;
+}
+.pago-chevron--abierto { transform: rotate(90deg); color: var(--color-primary); }
+
+.pago-detalle-item  { display: flex; flex-direction: column; gap: var(--space-1); }
+.pago-detalle-label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); }
+.pago-detalle-valor { font-size: 0.9375rem; color: var(--color-text-secondary); }
+
+/* ── Acciones ────────────────────────────────────────────── */
+
+.pagos-acciones { display: flex; align-items: center; gap: var(--space-1); }
+
+.pago-accion-btn {
+  width: 30px; height: 30px; border-radius: var(--radius-xs);
+  border: 1px solid var(--color-border); background: var(--color-surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.875rem; cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pago-accion-btn:hover { background: var(--color-surface-3); border-color: var(--color-border-hover); }
+.pago-accion-btn--pagado:hover { background: rgba(68,187,68,0.12); border-color: rgba(68,187,68,0.3); }
+.pago-accion-btn--eliminar:hover { background: var(--color-error-bg); border-color: rgba(255,68,68,0.3); }
+
+/* ── Form pago ───────────────────────────────────────────── */
+
+.pago-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.pago-form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.pago-form-field--full { grid-column: 1 / -1; }
+
+/* ── Toast ───────────────────────────────────────────────── */
+
+.pagos-toast {
+  position: fixed; top: var(--space-6); right: var(--space-6);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md); font-size: 0.9375rem; font-weight: 500;
+  z-index: var(--z-toast); box-shadow: var(--shadow-lg);
+  animation: pago-toast-in 0.25s ease; max-width: 360px;
+}
+.pagos-toast--success { background: rgba(68,187,68,0.15); border: 1px solid rgba(68,187,68,0.3); color: #66DD66; }
+.pagos-toast--error   { background: var(--color-error-bg); border: 1px solid rgba(255,68,68,0.3); color: #FF7777; }
+@keyframes pago-toast-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .pagos-page    { padding: var(--space-4); }
+  .pagos-header  { flex-direction: column; }
+  .pago-panel-detalle { grid-template-columns: 1fr 1fr; }
+  .pago-form-grid     { grid-template-columns: 1fr; }
+  .pagos-toast   { top: auto; bottom: var(--space-6); right: var(--space-4); left: var(--space-4); max-width: none; }
+}

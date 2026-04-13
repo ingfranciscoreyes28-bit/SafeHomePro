@@ -15,6 +15,7 @@ const ROLE_TIPS = {
   },
 }
 
+
 function calcularFortaleza(password) {
   if (!password) return 0
   let puntos = 0
@@ -117,11 +118,13 @@ export default function Registro() {
           tipo_usuario: tipoUsuario,
           rut: '',
           telefono: '',
+          estado: tipoUsuario === 'conductor' ? 'pendiente' : 'aprobado',
         },
         { onConflict: 'id' }
-    )
+      )
 
       if (perfilError) {
+        console.error('Error perfil completo:', JSON.stringify(perfilError))
         setCargando(false)
         setErrorGeneral('Cuenta creada, pero no se pudo guardar tu perfil. Contacta a soporte.')
         return
@@ -280,7 +283,6 @@ export default function Registro() {
                 {mostrarPassword ? '🙈' : '👁️'}
               </button>
             </div>
-            {/* Indicador de fortaleza */}
             {password.length > 0 && (
               <div className="registro-strength" aria-live="polite">
                 <div className="registro-strength__bar" aria-hidden="true">
@@ -362,7 +364,6 @@ export default function Registro() {
                 ⚠ {errores.tipoUsuario}
               </span>
             )}
-            {/* Tip dinámico según rol */}
             {tipoUsuario && ROLE_TIPS[tipoUsuario] && (
               <div className="registro-role-tip" aria-live="polite">
                 <span className="registro-role-tip__icon">{ROLE_TIPS[tipoUsuario].icon}</span>

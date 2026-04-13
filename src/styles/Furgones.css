@@ -1,0 +1,272 @@
+/* ============================================================
+   SafeHome — Furgones (CRUD admin)
+   ============================================================ */
+
+/* ── Página principal ────────────────────────────────────── */
+
+.furgones-page {
+  padding: var(--space-6);
+  max-width: 1200px;
+  position: relative;
+}
+
+.furgones-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.furgones-header__titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.furgones-header__sub {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.furgones-header__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+
+.furgones-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+/* ── Estado vacío ────────────────────────────────────────── */
+
+.furgones-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-16);
+  text-align: center;
+}
+
+.furgones-vacio__icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.furgones-vacio__texto {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+/* ── Tabla ───────────────────────────────────────────────── */
+
+.furgones-tabla-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.furgones-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.furgones-tabla thead {
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.furgones-tabla th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.furgones-tabla td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.furgones-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.furgones-tabla tbody tr:hover {
+  background: var(--color-surface-2);
+}
+
+/* Celda matrícula destacada */
+.furgon-matricula {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-faint);
+  border: 1px solid var(--color-primary-glow);
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  display: inline-block;
+}
+
+/* Conductor badge */
+.furgon-conductor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.furgon-conductor__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.furgon-sin-conductor {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ── Acciones de tabla ───────────────────────────────────── */
+
+.furgones-acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.furgon-accion-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.furgon-accion-btn:hover {
+  background: var(--color-surface-3);
+  border-color: var(--color-border-hover);
+}
+
+.furgon-accion-btn--eliminar:hover {
+  background: var(--color-error-bg);
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+/* ── Modal formulario ────────────────────────────────────── */
+
+.furgon-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.furgon-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.furgon-form-field--full {
+  grid-column: 1 / -1;
+}
+
+/* ── Toast ───────────────────────────────────────────────── */
+
+.furgones-toast {
+  position: fixed;
+  top: var(--space-6);
+  right: var(--space-6);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  z-index: var(--z-toast);
+  box-shadow: var(--shadow-lg);
+  animation: furgon-slide-in 0.25s ease;
+  max-width: 360px;
+}
+
+.furgones-toast--success {
+  background: rgba(68, 187, 68, 0.15);
+  border: 1px solid rgba(68, 187, 68, 0.3);
+  color: #66DD66;
+}
+
+.furgones-toast--error {
+  background: var(--color-error-bg);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #FF7777;
+}
+
+@keyframes furgon-slide-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* ── Responsivo ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .furgones-page {
+    padding: var(--space-4);
+  }
+
+  .furgones-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .furgones-header__acciones .sh-btn {
+    width: 100%;
+  }
+
+  .furgon-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .furgones-toast {
+    top: auto;
+    bottom: var(--space-6);
+    right: var(--space-4);
+    left: var(--space-4);
+    max-width: none;
+  }
+}
