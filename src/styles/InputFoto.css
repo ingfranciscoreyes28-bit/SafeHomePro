@@ -1,0 +1,89 @@
+/* ============================================================
+   InputFoto — Componente de seleccion y preview de imagen
+   ============================================================ */
+
+.input-foto-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.input-foto-preview {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--color-primary);
+  display: block;
+  flex-shrink: 0;
+}
+
+.input-foto-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-2);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast);
+}
+
+.input-foto-acciones {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.input-foto-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.input-foto-btn:hover:not(:disabled) {
+  background: var(--color-surface-2);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+}
+
+.input-foto-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-foto-eliminar {
+  color: var(--color-error);
+  border-color: var(--color-error);
+  background: transparent;
+}
+
+.input-foto-eliminar:hover:not(:disabled) {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.input-foto-input-oculto {
+  display: none;
+}

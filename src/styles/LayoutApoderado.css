@@ -330,22 +330,27 @@
    Main content area
    ============================================================ */
 
-.layout-apoderado__main {
-  flex: 1;
-  margin-left: 64px;
-  padding-top: 64px;
-  min-height: 100svh;
-  width: calc(100% - 64px);
-}
+   .layout-apoderado__main {
+    flex: 1;
+    padding-top: 64px;
+    min-height: 100svh;
+  
+    margin-left: 64px;
+    width: calc(100% - 64px);
+  
+    display: flex;
+    justify-content: center;
+  }
 
-.layout-apoderado__content {
-  width: 100%;
-  min-height: calc(100svh - 64px);
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
 
+  .layout-apoderado__content {
+    width: 100%;
+    max-width: 800px;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 /* ============================================================
    Mobile overlay / backdrop
    ============================================================ */
@@ -399,4 +404,33 @@
   .layout-apoderado__role-badge {
     display: none;
   }
+}
+
+
+.panel-apod-hijos-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  max-width: 600px;   /* 🔥 clave */
+  margin: 0 auto;     /* 🔥 centra */
+}
+
+.panel-apod {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.panel-apod__header {
+  text-align: center;
+}
+.panel-apod-resumen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
 }

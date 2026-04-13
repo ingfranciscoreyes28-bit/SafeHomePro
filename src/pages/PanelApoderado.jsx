@@ -197,9 +197,11 @@ export default function PanelApoderado() {
             })}
           </div>
 
-          <ChatWidget />
+          
         </>
       )}
+
+<ChatWidget />
     </div>
   )
 }

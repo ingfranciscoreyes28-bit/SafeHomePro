@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabase'
 import '../styles/Conductores.css'
+import InputFoto from './InputFoto'
+import { subirFoto } from '../services/storage'
 
 const LICENCIAS = ['A1', 'A2', 'A3', 'B', 'C', 'D', 'F']
 
@@ -22,6 +24,7 @@ export default function FormConductor({ conductor, onGuardado, onCerrar }) {
 
   const [perfil, setPerfil] = useState(ESTADO_INICIAL_PERFIL)
   const [detalle, setDetalle] = useState(ESTADO_INICIAL_DETALLE)
+  const [archivoFoto, setArchivoFoto] = useState(null)
   const [errores, setErrores] = useState({})
   const [cargando, setCargando] = useState(false)
   const [errorGeneral, setErrorGeneral] = useState('')
@@ -77,6 +80,13 @@ export default function FormConductor({ conductor, onGuardado, onCerrar }) {
 
     try {
       if (esEdicion) {
+        // Subir foto si se seleccionó una nueva
+        let urlFoto = conductor.foto ?? null
+        if (archivoFoto) {
+          const resultado = await subirFoto('fotos-conductores', archivoFoto, conductor.id)
+          urlFoto = resultado.url
+        }
+
         // Actualizar perfil
         const { error: errorPerfil } = await supabase
           .from('perfil')
@@ -84,6 +94,7 @@ export default function FormConductor({ conductor, onGuardado, onCerrar }) {
             nombre:   perfil.nombre.trim(),
             rut:      perfil.rut.trim(),
             telefono: perfil.telefono.trim(),
+            foto:     urlFoto,
           })
           .eq('id', conductor.id)
 
@@ -134,6 +145,24 @@ export default function FormConductor({ conductor, onGuardado, onCerrar }) {
 
         if (errorPerfil) throw errorPerfil
 
+        // Subir foto si se seleccionó una (ahora tenemos el id del nuevo perfil)
+        if (archivoFoto) {
+          try {
+            const resultado = await subirFoto('fotos-conductores', archivoFoto, nuevoPerfil.id)
+            const { error: errorFoto } = await supabase
+              .from('perfil')
+              .update({ foto: resultado.url })
+              .eq('id', nuevoPerfil.id)
+            if (errorFoto) throw errorFoto
+          } catch (errFoto) {
+            // El conductor fue creado. Si la foto falla, reportamos pero no revertimos.
+            setErrorGeneral(`Conductor creado, pero no se pudo guardar la foto: ${errFoto.message}`)
+            setCargando(false)
+            onGuardado()
+            return
+          }
+        }
+
         // Crear detalle del conductor
         const { error: errorDetalle } = await supabase
           .from('conductor_detalle')
@@ -177,8 +206,17 @@ export default function FormConductor({ conductor, onGuardado, onCerrar }) {
 
         <form onSubmit={handleSubmit} noValidate>
 
+          {/* ── Foto del conductor ── */}
+          <InputFoto
+            valorActual={conductor?.foto ?? null}
+            onArchivoSeleccionado={(file) => setArchivoFoto(file)}
+            onLimpiar={() => setArchivoFoto(null)}
+            label="Foto del conductor"
+            disabled={cargando}
+          />
+
           {/* ── Datos personales ── */}
-          <p className="form-seccion-titulo">Datos personales</p>
+          <p className="form-seccion-titulo" style={{ marginTop: 'var(--space-6)' }}>Datos personales</p>
 
           <div className="form-grid">
             <div className="form-field">

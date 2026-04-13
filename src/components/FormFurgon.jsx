@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabase'
 import '../styles/Furgones.css'
 import '../styles/Conductores.css'
+import InputFoto from './InputFoto'
+import { subirFoto } from '../services/storage'
 
 const ESTADO_INICIAL = {
   matricula:    '',
@@ -17,6 +19,7 @@ export default function FormFurgon({ furgon, onGuardado, onCerrar }) {
 
   const [campos, setCampos]         = useState(ESTADO_INICIAL)
   const [conductores, setConductores] = useState([])
+  const [archivoFoto, setArchivoFoto] = useState(null)
   const [errores, setErrores]       = useState({})
   const [cargando, setCargando]     = useState(false)
   const [errorGeneral, setErrorGeneral] = useState('')
@@ -90,16 +93,43 @@ export default function FormFurgon({ furgon, onGuardado, onCerrar }) {
 
     try {
       if (esEdicion) {
+        // Subir foto si se seleccionó una nueva
+        let urlFoto = furgon.foto_furgon ?? null
+        if (archivoFoto) {
+          const resultado = await subirFoto('fotos-furgones', archivoFoto, furgon.id)
+          urlFoto = resultado.url
+        }
+
         const { error } = await supabase
           .from('furgon')
-          .update(payload)
+          .update({ ...payload, foto_furgon: urlFoto })
           .eq('id', furgon.id)
         if (error) throw error
       } else {
-        const { error } = await supabase
+        const { data: nuevoFurgon, error } = await supabase
           .from('furgon')
           .insert(payload)
+          .select()
+          .single()
         if (error) throw error
+
+        // Subir foto si se seleccionó una (ahora tenemos el id del furgon)
+        if (archivoFoto) {
+          try {
+            const resultado = await subirFoto('fotos-furgones', archivoFoto, nuevoFurgon.id)
+            const { error: errorFoto } = await supabase
+              .from('furgon')
+              .update({ foto_furgon: resultado.url })
+              .eq('id', nuevoFurgon.id)
+            if (errorFoto) throw errorFoto
+          } catch (errFoto) {
+            // El furgón fue creado. Si la foto falla, reportamos pero no revertimos.
+            setErrorGeneral(`Furgón creado, pero no se pudo guardar la foto: ${errFoto.message}`)
+            setCargando(false)
+            onGuardado()
+            return
+          }
+        }
       }
       onGuardado()
     } catch (err) {
@@ -134,7 +164,16 @@ export default function FormFurgon({ furgon, onGuardado, onCerrar }) {
 
         <form onSubmit={handleSubmit} noValidate>
 
-          <div className="furgon-form-grid">
+          {/* ── Foto del furgón ── */}
+          <InputFoto
+            valorActual={furgon?.foto_furgon ?? null}
+            onArchivoSeleccionado={(file) => setArchivoFoto(file)}
+            onLimpiar={() => setArchivoFoto(null)}
+            label="Foto del furgón"
+            disabled={cargando}
+          />
+
+          <div className="furgon-form-grid" style={{ marginTop: 'var(--space-6)' }}>
 
             {/* Matrícula */}
             <div className="furgon-form-field">

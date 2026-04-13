@@ -5,6 +5,7 @@
 .perfil-page {
   padding: var(--space-6);
   max-width: 720px;
+  width: 100%;
   position: relative;
 }
 
