@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import '../styles/global.css'
 import '../styles/Login.css'
+import ChatSafeHome from "../components/ChatSafeHome";
 
 export default function Login() {
   const [correo, setCorreo] = useState('')
@@ -198,7 +199,24 @@ export default function Login() {
           <Link to="/registro">Regístrate aquí</Link>
         </div>
 
+      
+
       </div>
+
+{/* ✅ CHAT INTEGRADO (SIN ROMPER NADA) */}
+<div style={{
+                position: "fixed",
+                bottom: "20px",
+                right: "20px",
+                zIndex: 999
+              }}>
+                <ChatSafeHome />
+              </div>
+
+
+
+
+
     </div>
   )
 }
