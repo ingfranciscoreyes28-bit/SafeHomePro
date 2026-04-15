@@ -400,6 +400,55 @@ Los tres layouts (Admin, Conductor, Apoderado) siguen el mismo patrón:
 
 ---
 
+## Flujo de datos
+
+```
+Auth:
+  Login → supabase.auth.signInWithPassword() → auth.users → consulta perfil → AuthContext → guards → layout por rol → página
+
+CRUD (ejemplo: crear estudiante):
+  FormEstudiante → useState local → submit → supabase.from('estudiante').insert() → respuesta → actualizar tabla padre
+
+Upload de fotos:
+  InputFoto (selecciona archivo) → padre llama subirFoto() → storage.js valida + sube a bucket → URL pública → se guarda en columna foto/foto_furgon de la tabla
+
+Registro de conductor:
+  Registro.jsx → signUp() → insert en perfil con estado='pendiente' → conductor ve /solicitud-pendiente → admin aprueba → insert en conductor_detalle → estado='aprobado' → conductor accede a su panel
+```
+
+---
+
+## Prioridades operativas
+
+> Cuando Francisco pida "mejora el proyecto" o haya que decidir qué hacer primero, seguir este orden.
+
+| Prioridad | Área | Estado |
+|-----------|------|--------|
+| 🔴 CRÍTICA | Activar RLS en todas las tablas | Pendiente |
+| 🔴 CRÍTICA | Validar que anon key no exponga datos sin RLS | Pendiente |
+| 🟡 ALTA | Integrar pasarela de pagos real | Pendiente — proveedor por definir |
+| 🟡 ALTA | Centralizar queries de Supabase en servicios | Pendiente |
+| 🟡 ALTA | Mapa visual de rutas | Pendiente — API por definir |
+| 🟢 MEDIA | Refactorizar layouts duplicados en BaseLayout | Pendiente |
+| 🟢 MEDIA | Vista de apoderados para el conductor | Pendiente |
+| 🔵 BAJA | Agregar testing | Pendiente |
+| 🔵 BAJA | Migrar a TypeScript | Pendiente |
+
+---
+
+## Criterio de decisiones
+
+> Cómo debe pensar Claude Code al proponer soluciones en este proyecto.
+
+- **Simplicidad sobre abstracción** — si se resuelve en 5 líneas, no crear un hook/servicio/util nuevo
+- **No optimizar prematuramente** — el proyecto está en desarrollo, no en escala
+- **Consistencia sobre innovación** — seguir los patrones que ya existen (CSS puro, español, useState)
+- **Preguntar antes de agregar dependencias** — no instalar librerías sin confirmación de Francisco
+- **Cambios pequeños y seguros** — un archivo a la vez, verificar que no rompe otros flujos
+- **Seguridad siempre** — cualquier feature nueva debe considerar que RLS aún no está activo
+
+---
+
 ## Deuda técnica y pendientes críticos
 
 ### Seguridad (PRIORIDAD ALTA)
@@ -482,6 +531,24 @@ src/components/NuevoComponente.jsx
 // ❌ Cambiar variables existentes en global.css
 // ❌ Crear queries a tablas que no existen en el schema documentado arriba
 ```
+
+### Auto-mantenimiento del CLAUDE.md
+
+> Esta regla es obligatoria. Claude Code debe mantener este archivo actualizado.
+
+Después de completar una tarea que resuelva algo documentado en este archivo (un item de deuda técnica, una funcionalidad pendiente, una prioridad operativa), Claude Code **debe**:
+
+1. **Preguntar a Francisco:** *"Esto resuelve [X item] del CLAUDE.md. ¿Quieres que lo actualice? Puedo marcarlo como completado, actualizarlo con la implementación real, o eliminarlo si ya no aplica."*
+2. **No editar el CLAUDE.md sin confirmación** — siempre preguntar primero
+3. **Ser específico:** indicar exactamente qué línea/sección cambiaría y por qué
+
+Ejemplos de cuándo debe activarse:
+- Se activó RLS → preguntar si sacar ese item de deuda técnica y actualizar la sección de auth
+- Se integró Transbank para pagos → preguntar si mover de "pendiente" a "implementado" y documentar el proveedor
+- Se refactorizaron los layouts → preguntar si actualizar la sección de patrones de código
+- Se agregó una tabla nueva → preguntar si agregarla al schema documentado
+
+**El objetivo:** que este archivo refleje siempre el estado real del proyecto, no una foto del pasado.
 
 ---
 
