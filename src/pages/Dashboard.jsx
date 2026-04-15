@@ -146,7 +146,7 @@ function PanelAdmin() {
       {/* Acciones rápidas */}
       <div className="dashboard-section">
         <div className="dashboard-section__header">
-          <h2 className="dashboard-section__title">⚡ Acciones rápidas</h2>
+          <h2 className="dashboard-section__title">⚡ Acciones rápidas </h2>
         </div>
         <div className="dashboard-actions-grid">
           {acciones.map((a, i) => (
