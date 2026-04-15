@@ -223,7 +223,10 @@ estudiante(id) ──1:N──► pago(id_estudiante)
 1. Usuario se registra en `/registro` → `supabase.auth.signUp()` crea fila en `auth.users`
 2. Se inserta fila en `perfil` con `tipo_usuario` e `id` del auth user
 3. Si es conductor: `estado` empieza como `'pendiente'` → admin lo aprueba/rechaza
-4. Login: `supabase.auth.signInWithPassword()` → se carga perfil desde tabla `perfil`
+4. Si es apoderado: `estado` queda como `'aprobado'` (default) → accede directo, sin aprobación
+5. Login: `supabase.auth.signInWithPassword()` → se carga perfil desde tabla `perfil`
+
+> **Importante:** solo los conductores pasan por flujo de aprobación. Los apoderados se auto-aprueban. No implementar flujo de aprobación para apoderados.
 
 ### AuthContext.jsx expone:
 - `usuario` — objeto de Supabase Auth (session user)
@@ -422,17 +425,19 @@ Registro de conductor:
 
 > Cuando Francisco pida "mejora el proyecto" o haya que decidir qué hacer primero, seguir este orden.
 
-| Prioridad | Área | Estado |
-|-----------|------|--------|
-| 🔴 CRÍTICA | Activar RLS en todas las tablas | Pendiente |
-| 🔴 CRÍTICA | Validar que anon key no exponga datos sin RLS | Pendiente |
-| 🟡 ALTA | Integrar pasarela de pagos real | Pendiente — proveedor por definir |
-| 🟡 ALTA | Centralizar queries de Supabase en servicios | Pendiente |
-| 🟡 ALTA | Mapa visual de rutas | Pendiente — API por definir |
-| 🟢 MEDIA | Refactorizar layouts duplicados en BaseLayout | Pendiente |
-| 🟢 MEDIA | Vista de apoderados para el conductor | Pendiente |
-| 🔵 BAJA | Agregar testing | Pendiente |
-| 🔵 BAJA | Migrar a TypeScript | Pendiente |
+| Prioridad | Área | Detalle | Estado |
+|-----------|------|---------|--------|
+| 🔴 CRÍTICA | Activar RLS | Políticas por rol: admin accede a todo, conductor/apoderado solo a sus datos. Auditar queries sin filtro | Pendiente |
+| 🔴 CRÍTICA | Validar anon key | Sin RLS, la anon key expone toda la DB desde el navegador | Pendiente |
+| 🟡 ALTA | Pasarela de pagos | Integrar pagos reales. Proveedor por definir (se busca simple y económico para Chile) | Pendiente |
+| 🟡 ALTA | Centralizar queries | Mover queries de Supabase de componentes a archivos en `services/` | Pendiente |
+| 🟡 ALTA | Mapa visual de rutas | API de mapas por definir. Las rutas ya tienen lat/lng en la DB | Pendiente |
+| 🟢 MEDIA | Refactorizar layouts | Los 3 layouts comparten ~95% del código. Candidato a BaseLayout | Pendiente |
+| 🟢 MEDIA | Vista apoderados para conductor | El conductor debería ver los apoderados de sus estudiantes | Pendiente |
+| 🟢 MEDIA | Chat IA vía WhatsApp | Conectar Flask API a WhatsApp via n8n | Pendiente |
+| 🟢 MEDIA | Pago admin → conductor | Sistema de pago del admin hacia conductores. Por diseñar | Pendiente |
+| 🔵 BAJA | Agregar testing | No hay tests unitarios ni E2E | Pendiente |
+| 🔵 BAJA | Migrar a TypeScript | Todo es JS puro actualmente | Pendiente |
 
 ---
 
@@ -446,30 +451,6 @@ Registro de conductor:
 - **Preguntar antes de agregar dependencias** — no instalar librerías sin confirmación de Francisco
 - **Cambios pequeños y seguros** — un archivo a la vez, verificar que no rompe otros flujos
 - **Seguridad siempre** — cualquier feature nueva debe considerar que RLS aún no está activo
-
----
-
-## Deuda técnica y pendientes críticos
-
-### Seguridad (PRIORIDAD ALTA)
-- [ ] Activar RLS en TODAS las tablas de Supabase
-- [ ] Política RLS: cada usuario solo accede a sus datos según rol
-- [ ] Política RLS: admin accede a todo
-- [ ] Validar que `anon key` no exponga datos sin RLS
-- [ ] Auditar que no haya queries sin filtro de usuario
-
-### Funcionalidades pendientes
-- [ ] Integración de pasarela de pagos real (proveedor por definir)
-- [ ] Mapa visual de rutas (API de mapas por definir)
-- [ ] Chat IA vía WhatsApp (n8n como intermediario, aún no implementado)
-- [ ] Vista de apoderados para el conductor
-- [ ] Pago del admin al conductor (sistema por diseñar)
-
-### Mejoras técnicas
-- [ ] No hay testing (ni unitario ni E2E)
-- [ ] No hay tipado (todo es JavaScript puro, no TypeScript)
-- [ ] Queries a Supabase no están centralizadas (se hacen directo en componentes)
-- [ ] Los tres layouts tienen ~95% del código duplicado (candidato a refactor con un BaseLayout)
 
 ---
 
