@@ -433,7 +433,6 @@ Registro de conductor:
 | 🟡 ALTA | Centralizar queries | Mover queries de Supabase de componentes a archivos en `services/` | Pendiente |
 | 🟡 ALTA | Mapa visual de rutas | API de mapas por definir. Las rutas ya tienen lat/lng en la DB | Pendiente |
 | 🟢 MEDIA | Refactorizar layouts | Los 3 layouts comparten ~95% del código. Candidato a BaseLayout | Pendiente |
-| 🟢 MEDIA | Vista apoderados para conductor | El conductor debería ver los apoderados de sus estudiantes | Pendiente |
 | 🟢 MEDIA | Chat IA vía WhatsApp | Conectar Flask API a WhatsApp via n8n | Pendiente |
 | 🟢 MEDIA | Pago admin → conductor | Sistema de pago del admin hacia conductores. Por diseñar | Pendiente |
 | 🔵 BAJA | Agregar testing | No hay tests unitarios ni E2E | Pendiente |

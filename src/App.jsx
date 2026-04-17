@@ -20,9 +20,10 @@ import Estudiantes    from './pages/Estudiantes'
 import PagosAdmin     from './pages/PagosAdmin'
 
 // Páginas conductor
-import PanelRuta        from './pages/PanelRuta'
-import PanelEstudiantes from './pages/PanelEstudiantes'
-import Perfil           from './pages/Perfil'
+import PanelRuta              from './pages/PanelRuta'
+import PanelEstudiantes       from './pages/PanelEstudiantes'
+import ApoderadosConductor    from './pages/ApoderadosConductor'
+import Perfil                 from './pages/Perfil'
 
 // Páginas apoderado
 import PanelApoderado from './pages/PanelApoderado'
@@ -158,6 +159,7 @@ export default function App() {
       >
         <Route path="/conductor/panel"       element={<PanelRuta />} />
         <Route path="/conductor/estudiantes" element={<PanelEstudiantes />} />
+        <Route path="/conductor/apoderados"  element={<ApoderadosConductor />} />
         <Route path="/conductor/perfil"      element={<Perfil />} />
       </Route>
 

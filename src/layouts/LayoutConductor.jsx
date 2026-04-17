@@ -26,6 +26,7 @@ function getInitials(nombre) {
 const NAV_ITEMS = [
   { to: '/conductor/panel',       icon: '🏠', label: 'Panel' },
   { to: '/conductor/estudiantes', icon: '🧒', label: 'Mis estudiantes' },
+  { to: '/conductor/apoderados',  icon: '👨‍👩‍👧', label: 'Apoderados' },
   { to: '/conductor/perfil',      icon: '👤', label: 'Mi perfil' },
 ]
 
