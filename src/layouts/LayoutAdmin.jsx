@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { to: '/dashboard',   icon: '🏠', label: 'Dashboard' },
   { to: '/conductores', icon: '👨‍✈️', label: 'Conductores' },
   { to: '/furgones',    icon: '🚌', label: 'Furgones' },
+  { to: '/rutas',       icon: '🗺️', label: 'Rutas' },
   { to: '/apoderados',  icon: '👨‍👩‍👧', label: 'Apoderados' },
   { to: '/estudiantes', icon: '🧒', label: 'Estudiantes' },
   { to: '/pagos-admin', icon: '💰', label: 'Pagos' },

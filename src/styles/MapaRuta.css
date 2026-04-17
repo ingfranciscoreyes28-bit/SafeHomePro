@@ -1,0 +1,173 @@
+/* ============================================================
+   SafeHome — MapaRuta (componente reutilizable de mapa)
+   ============================================================ */
+
+.mapa-ruta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+/* ── Buscadores (modo editable) ──────────────────────────── */
+
+.mapa-ruta__buscadores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.mapa-ruta__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mapa-ruta__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Pin badge ───────────────────────────────────────────── */
+
+.mapa-ruta__pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.mapa-ruta__pin--inicio {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid #22c55e;
+  color: #22c55e;
+}
+
+.mapa-ruta__pin--final {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+/* ── Input wrap + sugerencias ────────────────────────────── */
+
+.mapa-ruta__input-wrap {
+  position: relative;
+}
+
+.mapa-ruta__spinner {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: mapa-spin 0.7s linear infinite;
+}
+
+@keyframes mapa-spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.mapa-ruta__sugerencias {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) 0;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.mapa-ruta__sugerencias li {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background var(--transition-fast);
+}
+
+.mapa-ruta__sugerencias li:hover {
+  background: var(--color-surface-3, #2a2a2a);
+  color: var(--color-text);
+}
+
+/* ── Canvas del mapa ─────────────────────────────────────── */
+
+.mapa-ruta__canvas {
+  width: 100%;
+  height: 340px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: #1a1a2e;
+}
+
+/* ── Labels readonly ─────────────────────────────────────── */
+
+.mapa-ruta__labels-readonly {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.mapa-ruta__label-readonly {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.mapa-ruta__label-readonly--sep {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ── Ayuda ───────────────────────────────────────────────── */
+
+.mapa-ruta__ayuda {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Responsivo ──────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .mapa-ruta__buscadores {
+    grid-template-columns: 1fr;
+  }
+
+  .mapa-ruta__canvas {
+    height: 260px;
+  }
+}

@@ -1,16 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
+import MapaRuta from '../components/MapaRuta'
 import '../styles/PanelRuta.css'
 import ChatWidget from "../components/ChatWidget";
 
 export default function PanelRuta() {
   const { perfil } = useAuth()
 
-  const [furgon, setFurgon]         = useState(null)     // null = sin asignar
+  const [furgon, setFurgon]           = useState(null)
+  const [ruta, setRuta]               = useState(null)
   const [estudiantes, setEstudiantes] = useState([])
-  const [cargando, setCargando]     = useState(true)
-  const [error, setError]           = useState(null)
+  const [cargando, setCargando]       = useState(true)
+  const [error, setError]             = useState(null)
 
   const cargar = useCallback(async () => {
     if (!perfil?.id) return
@@ -28,8 +30,8 @@ export default function PanelRuta() {
       if (errFurgon) throw errFurgon
       setFurgon(furgonData)
 
-      // 2) Si hay furgón, obtener sus estudiantes
       if (furgonData) {
+        // 2) Estudiantes del furgón
         const { data: estData, error: errEst } = await supabase
           .from('estudiante')
           .select('*, perfil!id_apoderado(id, nombre, telefono)')
@@ -38,8 +40,18 @@ export default function PanelRuta() {
 
         if (errEst) throw errEst
         setEstudiantes(estData ?? [])
+
+        // 3) Ruta del furgón
+        const { data: rutaData } = await supabase
+          .from('ruta')
+          .select('punto_inicio, punto_final, descripcion_ruta, duracion, horario_salida, lat_inicio, lng_inicio, lat_final, lng_final')
+          .eq('id_furgon', furgonData.id)
+          .maybeSingle()
+
+        setRuta(rutaData ?? null)
       } else {
         setEstudiantes([])
+        setRuta(null)
       }
     } catch (err) {
       console.error('Error al cargar panel de ruta:', err)
@@ -115,6 +127,25 @@ export default function PanelRuta() {
               </div>
             </div>
           </div>
+
+          {/* Mapa de la ruta */}
+          {ruta && (
+            <div className="panel-ruta__seccion-titulo" style={{ marginTop: 'var(--space-6)' }}>
+              🗺️ Ruta asignada
+              {ruta.horario_salida && <span style={{ marginLeft: 'var(--space-3)', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Salida: {ruta.horario_salida}</span>}
+              {ruta.duracion && <span style={{ marginLeft: 'var(--space-3)', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>· {ruta.duracion}</span>}
+            </div>
+          )}
+          {ruta ? (
+            <MapaRuta
+              modo="readonly"
+              coordenadas={ruta}
+            />
+          ) : furgon && (
+            <div className="panel-ruta__est-vacio" style={{ marginTop: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
+              No hay una ruta configurada para este furgón aún.
+            </div>
+          )}
 
           {/* Sección estudiantes */}
           <div className="panel-ruta__seccion-titulo">

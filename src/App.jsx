@@ -18,6 +18,7 @@ import Furgones       from './pages/Furgones'
 import Apoderados     from './pages/Apoderados'
 import Estudiantes    from './pages/Estudiantes'
 import PagosAdmin     from './pages/PagosAdmin'
+import Rutas          from './pages/Rutas'
 
 // Páginas conductor
 import PanelRuta              from './pages/PanelRuta'
@@ -145,6 +146,7 @@ export default function App() {
         <Route path="/apoderados"  element={<Apoderados />} />
         <Route path="/estudiantes" element={<Estudiantes />} />
         <Route path="/pagos-admin" element={<PagosAdmin />} />
+        <Route path="/rutas"       element={<Rutas />} />
       </Route>
 
       {/* ── Conductor ─────────────────────────────────────── */}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../services/supabase'
 import { useAuth } from '../context/AuthContext'
+import MapaRuta from '../components/MapaRuta'
 import '../styles/PanelApoderado.css'
 import ChatWidget from "../components/ChatWidget";
 
@@ -19,6 +20,7 @@ export default function PanelApoderado() {
 
   const [estudiantes, setEstudiantes] = useState([])
   const [pagosPendientes, setPagosPendientes] = useState([])
+  const [rutas, setRutas]       = useState({})   // { [id_furgon]: ruta }
   const [cargando, setCargando] = useState(true)
   const [error, setError]       = useState(null)
 
@@ -49,6 +51,21 @@ export default function PanelApoderado() {
 
       if (errPagos) throw errPagos
       setPagosPendientes(pagosData ?? [])
+
+      // 3) Rutas de los furgones de los hijos
+      const idsFurgones = [...new Set((estData ?? []).map(e => e.id_furgon).filter(Boolean))]
+      if (idsFurgones.length > 0) {
+        const { data: rutasData } = await supabase
+          .from('ruta')
+          .select('id_furgon, punto_inicio, punto_final, descripcion_ruta, duracion, horario_salida, lat_inicio, lng_inicio, lat_final, lng_final')
+          .in('id_furgon', idsFurgones)
+
+        const mapaRutas = {}
+        for (const r of rutasData ?? []) {
+          mapaRutas[r.id_furgon] = r
+        }
+        setRutas(mapaRutas)
+      }
     } catch (err) {
       console.error('Error al cargar panel apoderado:', err)
       setError('No se pudieron cargar los datos. Intenta recargar la página.')
@@ -191,7 +208,24 @@ export default function PanelApoderado() {
                     )}
                   </div>
 
-                  {/* TODO: integrar pasarela de pagos */}
+                  {/* Mapa de la ruta del furgón */}
+                  {furgon && rutas[furgon.id] && (
+                    <>
+                      <hr className="panel-apod-hijo-card__divider" />
+                      <div className="panel-apod-hijo-card__furgon-label" style={{ marginBottom: 'var(--space-2)' }}>
+                        🗺️ Ruta
+                        {rutas[furgon.id].horario_salida && (
+                          <span style={{ fontWeight: 400, color: 'var(--color-text-muted)', marginLeft: 'var(--space-2)' }}>
+                            Salida: {rutas[furgon.id].horario_salida}
+                          </span>
+                        )}
+                      </div>
+                      <MapaRuta
+                        modo="readonly"
+                        coordenadas={rutas[furgon.id]}
+                      />
+                    </>
+                  )}
                 </div>
               )
             })}

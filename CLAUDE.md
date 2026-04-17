@@ -79,6 +79,7 @@ safehome/
 │   │   ├── FormEstudiante.jsx
 │   │   ├── FormFurgon.jsx
 │   │   ├── InputFoto.jsx      # Componente de upload de fotos
+│   │   ├── MapaRuta.jsx       # Mapa visual de ruta (Leaflet)
 │   │   ├── ModalConfirmar.jsx
 │   │   ├── TablaApoderados.jsx
 │   │   ├── TablaConductores.jsx
@@ -106,6 +107,7 @@ safehome/
 │   │   ├── PanelRuta.jsx
 │   │   ├── Perfil.jsx
 │   │   ├── Registro.jsx
+│   │   ├── Rutas.jsx          # Gestión de rutas (admin)
 │   │   └── SolicitudPendiente.jsx
 │   ├── services/
 │   │   ├── supabase.js        # Inicialización del cliente (named export)
@@ -125,10 +127,12 @@ safehome/
 │   │   ├── Pagos.css
 │   │   ├── PagosApoderado.css
 │   │   ├── PanelApoderado.css
+│   │   ├── MapaRuta.css
 │   │   ├── PanelEstudiantes.css
 │   │   ├── PanelRuta.css
 │   │   ├── Perfil.css
-│   │   └── Registro.css
+│   │   ├── Registro.css
+│   │   └── Rutas.css
 │   ├── App.jsx                # Router principal con guards
 │   ├── index.css
 │   └── main.jsx               # Entry point (ReactDOM.createRoot)
@@ -263,6 +267,7 @@ Esto es deuda técnica crítica. Antes de ir a producción con clientes reales, 
 /apoderados                 → Apoderados
 /estudiantes                → Estudiantes
 /pagos-admin                → PagosAdmin
+/rutas                      → Rutas
 
 ── Conductor (RequireRol "conductor" + LayoutConductor) ──
 /conductor/panel            → PanelRuta
@@ -431,7 +436,6 @@ Registro de conductor:
 | 🔴 CRÍTICA | Validar anon key | Sin RLS, la anon key expone toda la DB desde el navegador | Pendiente |
 | 🟡 ALTA | Pasarela de pagos | Integrar pagos reales. Proveedor por definir (se busca simple y económico para Chile) | Pendiente |
 | 🟡 ALTA | Centralizar queries | Mover queries de Supabase de componentes a archivos en `services/` | Pendiente |
-| 🟡 ALTA | Mapa visual de rutas | API de mapas por definir. Las rutas ya tienen lat/lng en la DB | Pendiente |
 | 🟢 MEDIA | Refactorizar layouts | Los 3 layouts comparten ~95% del código. Candidato a BaseLayout | Pendiente |
 | 🟢 MEDIA | Chat IA vía WhatsApp | Conectar Flask API a WhatsApp via n8n | Pendiente |
 | 🟢 MEDIA | Pago admin → conductor | Sistema de pago del admin hacia conductores. Por diseñar | Pendiente |
